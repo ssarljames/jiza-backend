@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Project;
-use Faker\Factory;
+// use Faker\Factory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +15,6 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
 
-        $factory = Factory::create();
 
         $this->command->info('Seeding users...');
 
@@ -28,6 +27,7 @@ class UsersTableSeeder extends Seeder
         ]);
 
         if(env('APP_ENV', 'local') == 'local'){
+            $factory = Faker\Factory::create();
             for($i=0; $i < 5; $i++)
                 DB::table('users')->insert([
                     'username' => 'user' . ($i + 1),
