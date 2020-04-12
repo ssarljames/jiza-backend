@@ -38,7 +38,14 @@ class Project extends Model
 
     public function members()
     {
-        return $this->belongsToMany(User::class, 'project_members');
+        return $this->belongsToMany(User::class, 'project_members')
+                    ->withPivot([
+                        'project_id',
+                        'user_id',
+                        'role',
+                        'expired_at',
+                        'created_at'
+                    ]);
     }
 
     public function phases()
@@ -71,6 +78,6 @@ class Project extends Model
     }
 
     public function getMembersCountAttribute(){
-        return $this->project_members()->count();
+        return $this->project_members()->count() - 1;
     }
 }

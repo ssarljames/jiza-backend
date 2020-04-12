@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
+use App\Rules\ProjectMembershipNotExist;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
@@ -96,7 +99,45 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
-        //
+        $rules = [
+            'title' => [
+                            'required',
+                            'max:100',
+                            Rule::unique('projects')->where('user_id', $request->user()->id)->ignore($project->id)
+            ],
+            'description' => 'max:1000',
+            'new_members.*.user_id' => [
+                'nullable',
+                new ProjectMembershipNotExist($project)
+            ]
+        ];
+
+        $data = $request->validate($rules, [
+            'title.unique' => 'Project already exist in your account.'
+        ]);
+
+        try{
+            DB::beginTransaction();
+            $project->update($data);
+
+            if($request->new_members)
+                foreach($request->new_members as $n){
+                    $project->project_members()->create([
+                        'user_id' => $n['user_id']
+                    ]);
+                }
+
+            DB::commit();
+
+        }catch(Exception $e){
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Unkown error occured'
+            ], 500);
+        }
+
+        return $this->show($project);
     }
 
     /**

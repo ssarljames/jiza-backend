@@ -10,6 +10,10 @@ class ProjectPhase extends Model
 
     public function tasks()
     {
-        return $this->belongsToMany(ProjectTask::class, 'project_task_phases', 'project_phase_id', 'project_task_id');
+        return $this->belongsToMany(ProjectTask::class,
+                                    'project_task_phases',
+                                    'project_phase_id',
+                                    'project_task_id')
+                                    ->wherePivot('expired_at', null);
     }
 }

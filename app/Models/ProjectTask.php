@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Events\ModelEvents\ProjectTask\ProjectTaskCreated;
 use App\Events\ModelEvents\ProjectTask\ProjectTaskCreating;
+use App\Events\ModelEvents\ProjectTask\ProjectTaskUpdated;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,7 +30,8 @@ class ProjectTask extends Model
 
     protected $dispatchesEvents = [
         'creating' => ProjectTaskCreating::class,
-        'created'  => ProjectTaskCreated::class
+        'created'  => ProjectTaskCreated::class,
+        'updated'  => ProjectTaskUpdated::class
     ];
 
     public function project()

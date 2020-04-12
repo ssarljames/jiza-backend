@@ -25,6 +25,8 @@ class CreateProjectTaskPhasesTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
 
+            $table->dateTime('expired_at')->nullable();
+
             $table->string('remarks')->nullable();
 
             $table->timestamps();

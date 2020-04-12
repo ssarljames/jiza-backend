@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -27,17 +28,17 @@ class UserController extends Controller
                 ->orWhere('lastname', 'like', "%$request->q%");
             });
 
-        if($request->has('has_project_id')){
-            $project_id = $request->has_project_id;
-            $query->whereHas('projects', function(Builder $query) use ($project_id){
-                $query->where('projects.id', $project_id);
-            });
+        if($request->has('not_in_project_id')){
+            $project_id = $request->not_in_project_id;
+            $query->whereHas('project_members', function(Builder $query) use ($project_id){
+                $query->where('project_id', $project_id);
+            }, '=', 0);
         }
 
         $query->orderBy('firstname')
                 ->orderBy('lastname');
 
-        return $query->paginate();
+        return UserResource::collection($query->paginate());
     }
 
     /**

@@ -10,6 +10,7 @@ class ProjectTaskPhase extends Model
         'project_task_id',
         'project_phase_id',
         'user_id',
+        'expired_at',
         'remarks'
     ];
 

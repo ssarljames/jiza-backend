@@ -96,4 +96,9 @@ class User extends Authenticatable
 
         return $owned->union($other_projects);
     }
+
+    public function project_members()
+    {
+        return $this->hasMany(ProjectMember::class);
+    }
 }
