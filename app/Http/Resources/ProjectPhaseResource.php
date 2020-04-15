@@ -17,7 +17,7 @@ class ProjectPhaseResource extends JsonResource
         return [
             'id'        => $this->id,
             'description'   => $this->description,
-            // 'order'         => $this->order,
+            'order'         => $this->order,
             'tasks'         => $this->tasks()->select(['project_tasks.id', 'project_tasks.title', 'project_tasks.user_id', 'project_tasks.project_id',])->with('user')->limit(10)->get()
         ];
     }

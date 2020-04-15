@@ -4,9 +4,10 @@ namespace App;
 
 use App\Events\ModelEvents\User\UserCreating;
 use App\Events\ModelEvents\User\UserUpdating;
+use App\Models\BaseModel;
 use App\Models\Project;
 use App\Models\ProjectMember;
-use App\Models\StationUsageLog;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -48,6 +49,27 @@ class User extends Authenticatable
 
     public static function query(){
         return parent::query()->where('id', '>', 1);
+    }
+
+    public function scopeSearch(Builder $query, $s){
+        $s = trim($s);
+        if($s)
+            $query->where(function($q) use ($s){
+                $q->where('username', BaseModel::like(), "$s%")
+                    ->orWhere('firstname', BaseModel::like(), "%$s%")
+                    ->orWhere('lastname', BaseModel::like(), "%$s%");
+            });
+
+        return $query;
+    }
+
+    public function scopeNonMemberOfProject(Builder $query, $project_id){
+        if($project_id)
+            $query->whereHas('project_members', function(Builder $query) use ($project_id){
+                $query->where('project_id', $project_id);
+            }, '=', 0);
+
+        return $query;
     }
 
     public function checkPassword($password){

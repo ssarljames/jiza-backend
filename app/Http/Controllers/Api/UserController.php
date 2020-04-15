@@ -21,19 +21,10 @@ class UserController extends Controller
     {
         $query = User::query();
 
-        if($request->q)
-            $query->where(function($q) use ($request){
-                $q->where('username', 'like', "$request->q%")
-                ->orWhere('firstname', 'like', "%$request->q%")
-                ->orWhere('lastname', 'like', "%$request->q%");
-            });
+        $query->search( $request->q );
 
-        if($request->has('not_in_project_id')){
-            $project_id = $request->not_in_project_id;
-            $query->whereHas('project_members', function(Builder $query) use ($project_id){
-                $query->where('project_id', $project_id);
-            }, '=', 0);
-        }
+        $query->nonMemberOfProject( $request->not_in_project_id );
+
 
         $query->orderBy('firstname')
                 ->orderBy('lastname');

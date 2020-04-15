@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class ProjectTaskPhase extends Model
+
+class ProjectTaskPhase extends BaseModel
 {
     protected $fillable = [
         'project_task_id',

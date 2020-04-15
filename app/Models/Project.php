@@ -5,9 +5,9 @@ namespace App\Models;
 use App\Events\ModelEvents\Project\ProjectCreated;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 
-class Project extends Model
+
+class Project extends BaseModel
 {
     protected $fillable = [
         'title',

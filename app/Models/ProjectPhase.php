@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class ProjectPhase extends Model
+
+class ProjectPhase extends BaseModel
 {
     protected $fillable = [ 'description', 'order' ];
 

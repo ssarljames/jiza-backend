@@ -127,13 +127,23 @@ class ProjectController extends Controller
                     ]);
                 }
 
+
+            if($request->members_to_remove){
+                $ids = [];
+                foreach($request->members_to_remove as $n)
+                    array_push($ids, $n['user_id']);
+
+                $project->project_members()->whereIn('user_id', $ids)->delete();
+            }
+
             DB::commit();
 
         }catch(Exception $e){
             DB::rollBack();
 
             return response()->json([
-                'message' => 'Unkown error occured'
+                'message' => 'Unkown error occured',
+                'exception' => $e->getMessage()
             ], 500);
         }
 
