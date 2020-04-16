@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use App\Rules\ProjectMembershipNotExist;
+use App\Rules\ProjectPhaseRule;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -109,11 +110,13 @@ class ProjectController extends Controller
             'new_members.*.user_id' => [
                 'nullable',
                 new ProjectMembershipNotExist($project)
-            ]
+            ],
+            'new_phases' => new ProjectPhaseRule($project)
         ];
 
         $data = $request->validate($rules, [
-            'title.unique' => 'Project already exist in your account.'
+            'title.unique' => 'Project already exist in your account.',
+            'new_phases.*.order.min' => 'Invalid phases order number'
         ]);
 
         try{
@@ -134,6 +137,16 @@ class ProjectController extends Controller
                     array_push($ids, $n['user_id']);
 
                 $project->project_members()->whereIn('user_id', $ids)->delete();
+            }
+
+            if($request->new_phases){
+                foreach ($request->new_phases as $phase) {
+
+                    $project->phases()->where('order', '>=', $phase['order'])->update([
+                        'order' => DB::raw('project_phases.order + 1')
+                    ]);
+                    $project->phases()->create($phase);
+                }
             }
 
             DB::commit();
