@@ -11,6 +11,7 @@ class ProjectPhaseRule implements Rule
 {
     private $project;
     private $error_message;
+
     /**
      * Create a new rule instance.
      *
@@ -24,35 +25,38 @@ class ProjectPhaseRule implements Rule
     /**
      * Determine if the validation rule passes.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
+     * @param string $attribute
+     * @param mixed $value
      * @return bool
      */
     public function passes($attribute, $value)
     {
 
         $newPhasesCount = count($value);
-        $total = $this->project->phases()->count() + $newPhasesCount;
 
-        $maxOrder = max(array_map(function($arr){
-            return $arr['order'];
-        }, $value));
+        if ($newPhasesCount > 0) {
+            $total = $this->project->phases()->count() + $newPhasesCount;
 
-        if($maxOrder >= $total){
-            $this->error_message = 'Invalid phase order';
-            return false;
+            $maxOrder = max(array_map(function ($arr) {
+                return $arr['order'];
+            }, $value));
 
-        }
+            if ($maxOrder >= $total) {
+                $this->error_message = 'Invalid phase order';
+                return false;
 
-        $descriptions = array_map(function($arr){
-            return $arr['description'];
-        }, $value);
+            }
 
-        $exist = $this->project->phases()->whereIn('description', $descriptions)->count() > 0;
+            $descriptions = array_map(function ($arr) {
+                return $arr['description'];
+            }, $value);
 
-        if($exist){
-            $this->error_message = 'Phase already exist!';
-            return false;
+            $exist = $this->project->phases()->whereIn('description', $descriptions)->count() > 0;
+
+            if ($exist) {
+                $this->error_message = 'Phase already exist!';
+                return false;
+            }
         }
 
 
